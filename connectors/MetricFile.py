@@ -7,6 +7,9 @@ class MetricFile:
 		self.name = name
 		self.fd = open(name)
 		
+	def __next__(self):
+		return self.readline
+		
 	def readline(self):
 		self.lastline = self.fd.readline()
 		return self.lastline
