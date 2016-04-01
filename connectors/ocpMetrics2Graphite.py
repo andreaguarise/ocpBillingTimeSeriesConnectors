@@ -5,7 +5,10 @@ import Tenants
 import Graphite
 
 
-conf = Config.Config('./test.conf')
+confFile = "./test.conf"
+if len(sys.argv) > 1:
+    confFile = sys.argv[1]
+conf = Config.Config(confFile)
 conf.read()
 
 print "Now reading..."
