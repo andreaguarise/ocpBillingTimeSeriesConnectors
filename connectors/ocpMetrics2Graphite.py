@@ -3,7 +3,10 @@ import MetricFile
 import Metrics
 import Tenants
 import Graphite
+import sys
 
+
+        
 
 confFile = "./test.conf"
 if len(sys.argv) > 1:
@@ -11,8 +14,9 @@ if len(sys.argv) > 1:
 conf = Config.Config(confFile)
 conf.read()
 
-print "Now reading..."
+
 metricFile = MetricFile.MetricFile(conf.get("Producer","outFile"))
+print "Reading metrics from file:" + metricFile.name
 metricListOut = Metrics.Metrics()
 while metricFile.readline():
     metricListOut.append(metricFile.getMetric(metricFile.lastline))
