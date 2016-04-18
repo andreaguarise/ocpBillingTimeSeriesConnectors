@@ -14,3 +14,6 @@ class Config:
     
     def items(self,section):
         return self.config.items(section)
+    
+    def has_option(self,section,key):
+        return self.config.has_option(section,key)
