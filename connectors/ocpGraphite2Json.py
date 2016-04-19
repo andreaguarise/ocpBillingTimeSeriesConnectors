@@ -6,8 +6,13 @@ import Tenants
 import RESTClient
 import re
 
-#class OutputFile:
-#    def __init__(self):    
+class OutputFile:
+    def __init__(self,list):
+        self.list = list    
+        
+    def write(self):
+        for l in self.list:
+            print l
 
 class JsonTransform:
     def __init__(self,json,config):
@@ -19,7 +24,7 @@ class JsonTransform:
         #print "Will tansform target:" + self.json[0]['target']
         regexp = "(.*)." + metric
         p = re.compile(regexp)
-        m = p.findall(self.json[0]["target"]) #"m[0] shall contain the tenant string"
+        m = p.findall(self.json[0]["target"]) #"m[0] shall contain the tenant string" FIXME: MUST iterate over list elements json[i] not just the first json[0]
         newMetric = metric #Also metric should be translated using a translation table
         if self.config.has_option("MetricTranslations",metric):
                 newMetric = self.config.get("MetricTranslations",metric)
@@ -52,6 +57,11 @@ conf = Config.Config(confFile)
 conf.read()
 graphite = GraphiteRender(conf)
 print "reading metrics from: " + graphite.baseUri
+outputList = []
 for gMetric in graphite.metrics: 
-    print JsonTransform(graphite.get(gMetric,""),conf).tenantTransform(gMetric[0])
+    outputList.append(JsonTransform(graphite.get(gMetric,""),conf).tenantTransform(gMetric[0]))
+    
+file = OutputFile(outputList)
+
+file.write()
 
