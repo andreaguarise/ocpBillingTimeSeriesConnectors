@@ -15,3 +15,4 @@ class RESTClient:
     
     def json_body_load(self):
         return json.loads(self.body)
+    

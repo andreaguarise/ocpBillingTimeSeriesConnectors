@@ -5,35 +5,49 @@ import Metrics
 import Tenants
 import RESTClient
 import re
+import json
 
 class OutputFile:
-    def __init__(self,list):
-        self.list = list    
+    def __init__(self,config,list):
+        self.list = list
+        if config.has_option("ocpGraphite2Jason","path"):
+            self.path = config.get("ocpGraphite2Jason","path")  
+        else:
+            self.path = "/tmp/"            
         
     def write(self):
         for l in self.list:
-            print l
+            fileName = self.path + "/" + l[0] + ".json"
+            print "file:" + fileName + " content:" 
+            print l[1]
+            output = open(fileName, 'w')
+            content = json.dumps(l[1])
+            output.write(content)
+            output.close()
 
 class JsonTransform:
     def __init__(self,json,config):
         self.json =json
         self.config = config
         
-    def tenantTransform(self,metric):
-        #print "Transform Use key:" + metric
-        #print "Will tansform target:" + self.json[0]['target']
+    def map(self,metric):
+        print "Transform Use key:" + metric
+        
         regexp = "(.*)." + metric
         p = re.compile(regexp)
-        m = p.findall(self.json[0]["target"]) #"m[0] shall contain the tenant string" FIXME: MUST iterate over list elements json[i] not just the first json[0]
-        newMetric = metric #Also metric should be translated using a translation table
-        if self.config.has_option("MetricTranslations",metric):
-                newMetric = self.config.get("MetricTranslations",metric)
-                #print "matching:" + metric + " --> " + newMetric
-        if m: 
-            if self.config.has_option("TenantTranslations",m[0]):
-                newTenant = self.config.get("TenantTranslations",m[0])
-                #print "matching:" + m[0] + " --> " + newTenant
-                self.json[0]["target"] = newTenant + "." + newMetric
+        for element in self.json:
+            print "Will tansform target:" + element['target']
+            m = p.findall(element["target"]) #"m[0] shall contain the tenant string"
+            newMetric = metric #Also metric should be translated using a translation table
+            if self.config.has_option("MetricTranslations",metric):
+                    newMetric = self.config.get("MetricTranslations",metric)
+                    #print "matching:" + metric + " --> " + newMetric
+                    if m: 
+                        if self.config.has_option("TenantTranslations",m[0]):
+                            newTenant = self.config.get("TenantTranslations",m[0])
+                            #print "matching:" + m[0] + " --> " + newTenant
+                            element["target"] = newTenant + "." + newMetric
+                
         return self.json
 
 class GraphiteRender:
@@ -59,9 +73,8 @@ graphite = GraphiteRender(conf)
 print "reading metrics from: " + graphite.baseUri
 outputList = []
 for gMetric in graphite.metrics: 
-    outputList.append(JsonTransform(graphite.get(gMetric,""),conf).tenantTransform(gMetric[0]))
+    outputList.append((gMetric[0],JsonTransform(graphite.get(gMetric,""),conf).map(gMetric[0])))
     
-file = OutputFile(outputList)
-
+file = OutputFile(conf,outputList)
 file.write()
 
