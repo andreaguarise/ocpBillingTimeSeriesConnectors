@@ -1,6 +1,5 @@
 import sys
 import Config
-import MetricFile
 import Metrics
 import Tenants
 
@@ -11,16 +10,18 @@ conf = Config.Config(confFile)
 conf.read()
 pillarBaseUri = conf.get("Pillar","baseUri")
 metrics = conf.items("Metrics")
-print "reading tenant list from: " + pillarBaseUri
+print "Reading tenant list from: " + pillarBaseUri
 tenants = Tenants.Tenants(pillarBaseUri)
 metricList = Metrics.Metrics()
-for t in tenants.get():
-    hosts = t.getHosts()
+for tenant in tenants.get():
+    hosts = tenant.getHosts()
     if hosts != None:
-        for h in hosts.list:
-                h.get()
-                for m in metrics:
-                    metric = h.getMetric(conf,m[0])
-                    metricList.append(metric)
-metricList.output(conf.get("Producer","outFile"))
+        for host in hosts.list:
+                host.get()
+                for metric in metrics:
+                    metricBuffer = host.getMetric(conf,metric[0])
+                    metricList.append(metricBuffer)
+outputFile = conf.get("Producer","outFile")
+print "Writing metrics in output file:" + outputFile
+metricList.output(outputFile)
 
