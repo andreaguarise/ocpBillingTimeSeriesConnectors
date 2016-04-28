@@ -1,5 +1,5 @@
 import Config
-import MetricFile
+import File
 import Metrics
 import Tenants
 import Graphite
@@ -15,7 +15,7 @@ conf = Config.Config(confFile)
 conf.read()
 
 
-metricFile = MetricFile.MetricFile(conf.get("Producer","outFile"))
+metricFile = File.MetricFile(conf.get("Producer","outFile"))
 print "Reading metrics from file:" + metricFile.name
 metricListOut = Metrics.Metrics()
 while metricFile.readline():

@@ -1,5 +1,6 @@
 import Hosts
 import Metrics
+import json
 
 
 class MetricFile:
@@ -25,4 +26,23 @@ class MetricFile:
 		(a,b,c,d,e) = self.readline().strip().split(';')
 		h = Hosts.Host(b,a,"")
 		return Metrics.Metric(h,c,d,e)
+	
+	
+class OutputFile:
+    def __init__(self,path,filelist):
+        self.list = filelist
+        self.path = path            
+        
+    def write(self):
+        for l in self.list:
+            fileName = self.path + "/" + l[0] + ".json"
+            print "file:" + fileName + " content:" 
+            print l[1]
+            output = open(fileName, 'w')
+            content = json.dumps(l[1])
+            output.write(content)
+            output.close()
+
+	
+	
 		

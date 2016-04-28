@@ -1,33 +1,15 @@
 import sys
 import Config
-import MetricFile
+import File
 import Metrics
 import Tenants
-import RESTClient
+import Graphite
 import re
-import json
 
-class OutputFile:
-    def __init__(self,config,list):
-        self.list = list
-        if config.has_option("ocpGraphite2Jason","path"):
-            self.path = config.get("ocpGraphite2Jason","path")  
-        else:
-            self.path = "/tmp/"            
-        
-    def write(self):
-        for l in self.list:
-            fileName = self.path + "/" + l[0] + ".json"
-            print "file:" + fileName + " content:" 
-            print l[1]
-            output = open(fileName, 'w')
-            content = json.dumps(l[1])
-            output.write(content)
-            output.close()
 
 class JsonTransform:
     def __init__(self,json,config):
-        self.json =json
+        self.json = json
         self.config = config
         
     def map(self,metric):
@@ -50,18 +32,7 @@ class JsonTransform:
                 
         return self.json
 
-class GraphiteRender:
-    def __init__(self,config):
-        self.baseUri = conf.get("Graphite","RenderUri")
-        self.metrics = conf.items("GraphiteMetrics")
-        self.renderFrom = conf.get("Graphite","RenderFrom")
-        
-    def get(self,metric,constraints):
-        uri = self.baseUri + "/render?target=" + metric[1] + "&" + "from=" + self.renderFrom + "&format=json"
-        print uri
-        rest = RESTClient.RESTClient(uri)
-        rest.get()
-        return rest.json_body_load()
+
         
 
 confFile = "./test.conf"
@@ -69,12 +40,15 @@ if len(sys.argv) > 1:
     confFile = sys.argv[1]
 conf = Config.Config(confFile)
 conf.read()
-graphite = GraphiteRender(conf)
+graphite = Graphite.GraphiteRender(conf)
 print "reading metrics from: " + graphite.baseUri
 outputList = []
 for gMetric in graphite.metrics: 
     outputList.append((gMetric[0],JsonTransform(graphite.get(gMetric,""),conf).map(gMetric[0])))
-    
-file = OutputFile(conf,outputList)
+
+outputPath = "/tmp/"
+if conf.has_option("ocpGraphite2Jason","path"):
+            outputPath = conf.get("ocpGraphite2Jason","path")    
+file = File.OutputFile(outputPath,outputList)
 file.write()
 
