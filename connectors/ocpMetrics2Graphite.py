@@ -1,8 +1,7 @@
 import Config
 import File
-import Metrics
 import Tenants
-import Graphite
+from Graphite import Graphite
 import sys
 
 
@@ -14,12 +13,9 @@ if len(sys.argv) > 1:
 conf = Config.Config(confFile)
 conf.read()
 
-
 metricFile = File.MetricFile(conf.get("Producer","outFile"))
+graphiteUrl = conf.get("Graphite","Url")
 print "Reading metrics from file:" + metricFile.name
-metricListOut = Metrics.Metrics()
 while metricFile.readline():
-    metricListOut.append(metricFile.getMetric(metricFile.lastline))
-    Graphite.Graphite(conf.get("Graphite","Url")).postMetric(metricFile.getMetric(metricFile.lastline))
-#metricListOut.output()
+    Graphite(graphiteUrl).postMetric(metricFile.getMetric(metricFile.lastline))
     
