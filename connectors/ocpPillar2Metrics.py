@@ -11,9 +11,9 @@ conf.read()
 pillarBaseUri = conf.get("Pillar","baseUri")
 metrics = conf.items("Metrics")
 print "Reading tenant list from: " + pillarBaseUri
-tenants = Tenants.Tenants(pillarBaseUri)
+tenants = Tenants.Tenants(pillarBaseUri)#Get tenant list from the monitoring Pillar
 metricList = Metrics.Metrics()
-for tenant in tenants.get():#Get tenant list from moniotirng pillare REST interface
+for tenant in tenants.get():#Get tenant list from monitoring pillare REST interface
     hosts = tenant.getHosts()# For each Tenant in the list get the hosts (VM) used by that tenant
     if hosts != None:
         for host in hosts.list:# For each host get the JSON with the last information available

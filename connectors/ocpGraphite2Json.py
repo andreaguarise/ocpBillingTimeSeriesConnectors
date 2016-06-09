@@ -6,7 +6,8 @@ import Tenants
 from Graphite import GraphiteRender
 from JsonTransform import JsonTransform
 
-        
+#Read a given set of metric specified in the conf file, retrieves the metrics from graphite, perform some configurable transformations
+#on the metric name and save the result in a file in a JSON formatted string
 confFile = "./test.conf"
 if len(sys.argv) > 1:
     confFile = sys.argv[1]
