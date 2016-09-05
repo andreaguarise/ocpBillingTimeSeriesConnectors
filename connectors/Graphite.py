@@ -13,7 +13,7 @@ class Graphite:
             'host.' + metric.host.name.replace(" ", "_") +
             '.' + str(metric.name) +
             ' ' +
-            str(int(round(float(metric.value)))) + ' ' + str(dt.strftime("%s")) + '" | nc faust01.to.infn.it 2003')
+            str(int(round(float(metric.value)))) + ' ' + str(dt.strftime("%s")) + '" | nc ' + str(self.host) + ' ' +str(self.port))
         print command    
         os.system(command)
         
