@@ -26,8 +26,10 @@ class MetricsFile (Metrics):
     def output(self,out):
             outfile = open(out, 'w')
             for m in self.list:
-                print >> outfile, m.host.tenant + ";" + m.host.name + ";" + str(m.name)    + ";" +  str(m.time) + ";" + str(m.value)
+                print m
+                if m:
+                    print >> outfile, m.host.tenant + ";" + m.host.name + ";" + str(m.name)    + ";" +  str(m.time) + ";" + str(m.value)
                 
-class MetricsStomp (Metrics):
+class MetricsStomp (Metrics):#implements the Message Endpoint EIP
     def __init__(self):
         assert False, "Implement It!"

@@ -16,12 +16,14 @@ print "Will write metrics in output channel:" + outputFile
 metricList = Metrics.MetricsFile()#FIXME: Use appropriate class File or Stomp on the basis of the protocol specified in conf file. 
 tenants = Tenants.Tenants(pillarBaseUri)#Get tenant list from the monitoring Pillar
 for tenant in tenants.get():#Get tenant list from monitoring pillare REST interface
+    print "\nTENANT NAME:" + tenant.name
     hosts = tenant.getHosts()# For each Tenant in the list get the hosts (VM) used by that tenant
-    if hosts != None:
-        for host in hosts.list:# For each host get the JSON with the last information available
-                for metric in metrics:#For each metric defined in the conf file get the metric from the REST interface and append the metric in a list
-                    metricBuffer = host.getMetric(conf,metric[0])
-                    metricList.append(metricBuffer)
+    for host in hosts.list:# For each host get the JSON with the last information available
+        print "****HOST NAME:" + host.name
+        for metric in metrics:#For each metric defined in the conf file get the metric from the REST interface and append the metric in a list
+            print "*****SEARCH FOR METRIC: "+ metric[0]
+            metricBuffer = host.getMetric(conf,metric[0])
+            metricList.append(metricBuffer)
 metricList.output(outputFile)# write metrics down in output file
 
 #output file format:

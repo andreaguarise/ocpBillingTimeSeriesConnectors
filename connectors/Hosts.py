@@ -15,12 +15,14 @@ class Host:
 	
 	def getMetric(self,conf,metricName):
 		uri = self.uri + conf.get("Metrics",metricName)
+		print "GET METRIC " + uri
 		rest = RESTClient.RESTClient(uri)
 		rest.get()
-		value = rest.json_body_load()["result"]["groups"][0]["paasMachines"][0]["services"][0]["paasMetrics"][0]["metricValue"]
-		time = rest.json_body_load()["result"]["groups"][0]["paasMachines"][0]["services"][0]["paasMetrics"][0]["metricTime"]
-		metric = Metrics.Metric(self,metricName,time,value)
-		return metric
+		if rest.status_code == 200:
+			value = rest.json_body_load()["result"]["groups"][0]["paasMachines"][0]["services"][0]["paasMetrics"][0]["metricValue"]
+			time = rest.json_body_load()["result"]["groups"][0]["paasMachines"][0]["services"][0]["paasMetrics"][0]["metricTime"]
+			metric = Metrics.Metric(self,metricName,time,value)
+			return metric
 		
 
 class Hosts:

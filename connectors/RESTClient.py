@@ -7,6 +7,7 @@ class RESTClient:
         self.uri = uri
  
     def get(self):
+        print "++++++++REST CALL URI:" + self.uri
         r = requests.get(self.uri)
         self.status_code = r.status_code
         self.headers = r.headers

@@ -16,6 +16,7 @@ class Tenant:
         rest = RESTClient.RESTClient(self.uri + "/hosts")
         rest.get()
         buff = rest.json_body_load()["result"]["groups"]
+        print "***GET /HOSTS :" + rest.body
         try:
             result = []
             for h in buff[0]["paasMachines"]:
